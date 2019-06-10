@@ -42,6 +42,8 @@ void destroy_array(Array *arr) {
   if (arr->elements != '\0') {
     free(arr->elements);
   }
+
+  free(arr->elements);
   
   // Free array
   free(arr);
@@ -120,14 +122,18 @@ void arr_insert(Array *arr, char *element, int index) {
  * Append an element to the end of the array
  *****/
 void arr_append(Array *arr, char *element) {
-
   // Resize the array if the number of elements is over capacity
   // or throw an error if resize isn't implemented yet.
+    if (arr->count >= arr->capacity) {
+      resize_array(arr);
+    }
 
   // Copy the element and add it to the end of the array
+  char *copy_elem = strdup(element);
+  arr->elements[arr->count] = copy_elem;
 
   // Increment count by 1
-
+  arr->count++;
 }
 
 /*****
