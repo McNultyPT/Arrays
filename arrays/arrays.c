@@ -29,6 +29,8 @@ Array *create_array (int capacity) {
 
   // Allocate memory for elements
   arr->elements = malloc(sizeof(char*) * capacity);
+
+  return arr;
 }
 
 
@@ -36,11 +38,13 @@ Array *create_array (int capacity) {
  * Free memory for an array and all of its stored elements
  *****/
 void destroy_array(Array *arr) {
-
   // Free all elements
-
+  if (arr->elements != NULL) {
+    free(arr->elements);
+  }
+  
   // Free array
-
+  free(arr);
 }
 
 /*****
