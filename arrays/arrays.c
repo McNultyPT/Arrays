@@ -94,6 +94,8 @@ char *arr_read(Array *arr, int index) {
   return arr->elements[index];
 }
 
+// revision
+
 
 /*****
  * Insert an element to the array at the given index
