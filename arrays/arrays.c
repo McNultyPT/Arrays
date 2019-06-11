@@ -28,7 +28,7 @@ Array *create_array (int capacity) {
   arr->count = 0;
 
   // Allocate memory for elements
-  arr->elements = malloc(sizeof(char*) * capacity);
+  arr->elements = malloc(sizeof(char *) * capacity);
 
   return arr;
 }
@@ -39,8 +39,8 @@ Array *create_array (int capacity) {
  *****/
 void destroy_array(Array *arr) {
   // Free all elements
-  if (arr->elements != '\0') {
-    free(arr->elements);
+  for (int i = 0; i < arr->count; i++) {
+    free(arr->elements[i]);
   }
 
   free(arr->elements);
@@ -117,12 +117,15 @@ void arr_insert(Array *arr, char *element, int index) {
   }
 
   // Move every element after the insert index to the right one position
-  
+  for (int i = arr->capacity - 1; i >= index; i--) {
+    arr->elements[i] = arr->elements[i - 1];
+  }
 
   // Copy the element (hint: use `strdup()`) and add it to the array
+  arr->elements[index] = strdup(element);
 
   // Increment count by 1
-
+  arr->count++;
 }
 
 /*****
