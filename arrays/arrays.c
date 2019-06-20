@@ -21,11 +21,16 @@ typedef struct Array {
  *****/
 Array *create_array (int capacity) {
   // Allocate memory for the Array struct
+  Array *arr = malloc(sizeof(Array));
 
   // Set initial values for capacity and count
+  arr->capacity = capacity;
+  arr->count = 0;
 
   // Allocate memory for elements
+  arr->elements = malloc(sizeof(char *) * capacity);
 
+  return arr;
 }
 
 
@@ -33,11 +38,15 @@ Array *create_array (int capacity) {
  * Free memory for an array and all of its stored elements
  *****/
 void destroy_array(Array *arr) {
-
   // Free all elements
+  for (int i = 0; i < arr->count; i++) {
+    free(arr->elements[i]);
+  }
 
+  free(arr->elements);
+  
   // Free array
-
+  free(arr);
 }
 
 /*****
@@ -45,15 +54,21 @@ void destroy_array(Array *arr) {
  * from old to new
  *****/
 void resize_array(Array *arr) {
-
   // Create a new element storage with double capacity
+  int new_capacity = arr->capacity * 2;
+  char **new_elements = malloc(new_capacity * sizeof(char *));
 
   // Copy elements into the new storage
+  for (int i = 0; i < arr->count; i++) {
+    new_elements[i] = arr->elements[i];
+  }
 
   // Free the old elements array (but NOT the strings they point to)
+  free(arr->elements);
 
   // Update the elements and capacity to new values
-
+  arr->elements = new_elements;
+  arr->capacity = new_capacity;
 }
 
 
@@ -70,11 +85,17 @@ void resize_array(Array *arr) {
  * Throw an error if the index is out of range.
  *****/
 char *arr_read(Array *arr, int index) {
-
   // Throw an error if the index is greater or equal to than the current count
+  if (index >= arr->count) {
+    fprintf(stderr, "Index %d out of range\n", index);
+    return NULL;
+  }
 
   // Otherwise, return the element at the given index
+  return arr->elements[index];
 }
+
+// revision
 
 
 /*****
@@ -83,31 +104,45 @@ char *arr_read(Array *arr, int index) {
  * Store the VALUE of the given string, not the REFERENCE
  *****/
 void arr_insert(Array *arr, char *element, int index) {
-
   // Throw an error if the index is greater than the current count
+  if (index > arr->count) {
+    fprintf(stderr, "Index %d is out of range\n", index );
+    return NULL;
+  }
 
   // Resize the array if the number of elements is over capacity
+  if (arr->count >= arr->capacity) {
+    resize_array(arr);
+  }
 
   // Move every element after the insert index to the right one position
+  for (int i = arr->capacity - 1; i >= index; i--) {
+    arr->elements[i] = arr->elements[i - 1];
+  }
 
   // Copy the element (hint: use `strdup()`) and add it to the array
+  arr->elements[index] = strdup(element);
 
   // Increment count by 1
-
+  arr->count++;
 }
 
 /*****
  * Append an element to the end of the array
  *****/
 void arr_append(Array *arr, char *element) {
-
   // Resize the array if the number of elements is over capacity
   // or throw an error if resize isn't implemented yet.
+    if (arr->count >= arr->capacity) {
+      resize_array(arr);
+    }
 
   // Copy the element and add it to the end of the array
+  char *copy_elem = strdup(element);
+  arr->elements[arr->count] = copy_elem;
 
   // Increment count by 1
-
+  arr->count++;
 }
 
 /*****
@@ -117,14 +152,27 @@ void arr_append(Array *arr, char *element) {
  * Throw an error if the value is not found.
  *****/
 void arr_remove(Array *arr, char *element) {
-
   // Search for the first occurence of the element and remove it.
   // Don't forget to free its memory!
+  int matching_index = 0;
+
+  for (int i = 0; i < arr->count; i++) {
+    int compare_result = strcmp(arr->elements[i], element);
+
+    if (compare_result == 0) {
+      matching_index = i;
+      free(arr->elements[i]);
+      arr->elements[i] = NULL;
+    }
+  }
 
   // Shift over every element after the removed element to the left one position
+  for (int i = matching_index; i < arr->count; i++) {
+    arr->elements[i] = arr->elements[i + 1];
+  }
 
   // Decrement count by 1
-
+  arr->count--;
 }
 
 
